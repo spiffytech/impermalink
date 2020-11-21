@@ -1,0 +1,70 @@
+{{> header }}
+
+<form action="/signup" method="POST">
+  {{#formErrors.length}}
+  <article class="message is-danger">
+    <div class="message-header"><p>Watch out, an error!</p></div>
+    <div class="message-body">
+      <ul>
+        {{#formErrors}}
+        <li>{{message}}</li>
+        {{/formErrors}}
+      </ul>
+    </div>
+  </article>
+  {{/formErrors.length}}
+  <div class="field">
+    <label class="label">Email</label>
+    <div class="control has-icons-left has-icons-right">
+      <span class="icon is-small is-left">
+        <i class="fas fa-user"></i>
+      </span>
+      <input class="input" type="email" name="email"
+      placeholder="HomeStarRunner@StrongBadia.net" required {{#email}}
+      value="{{.}}" {{/email}} />
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Password</label>
+    <div class="control has-icons-left has-icons-right">
+      <span class="icon is-small is-left">
+        <i class="fas fa-key"></i>
+      </span>
+      <input
+        class="input"
+        type="password"
+        name="password"
+        placeholder="population: tire"
+        required
+        minlength="8"
+      />
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">The same password, but again</label>
+    <div class="control has-icons-left has-icons-right">
+      <span class="icon is-small is-left">
+        <i class="fas fa-key"></i>
+      </span>
+      <input
+        class="input"
+        type="password"
+        name="password_again"
+        placeholder="population: tire"
+        required
+        minlength="8"
+      />
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="control">
+      <button class="button is-primary" type="submit">
+        Beam me up, Scotty!
+      </button>
+    </div>
+  </div>
+</form>
+
+{{> footer }}
