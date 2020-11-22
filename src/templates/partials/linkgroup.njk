@@ -1,8 +1,10 @@
-<section>
-  <header>{{linkGroup.domain}}</header>
+<div class="box">
+  <header class="title is-6">{{linkGroup.domain | replace(r/^www\./, '')}}</header>
   <ul>
     {% for link in linkGroup.links %}
-      {% include "partials/link.njk" %}
+      <li>
+        {% include "partials/link.njk" %}
+      </li>
     {% endfor %}
   </ul>
-</section>
+</div>

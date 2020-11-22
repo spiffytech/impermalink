@@ -23,7 +23,7 @@ async function getPageTitle(url: string): Promise<string> {
     if (mime.getExtension(response.headers["content-type"]) === "html") {
       const $ = cheerio.load(response.data);
       const titleTagText = $("title").text();
-      return titleTagText ?? "Untitled";
+      return titleTagText || "Untitled";
     } else {
       return `Untitled ${mime.getExtension(response.headers["content-type"])}`;
     }
@@ -40,6 +40,12 @@ async function getPageTitle(url: string): Promise<string> {
 
 export async function add(email: string, urlRaw: string) {
   const [url, domain] = parseUrl(urlRaw);
+
+  const alreadyHaveLink = db
+    .prepare("select 1 from links where email=? and url=?")
+    .get(email, url);
+  if (alreadyHaveLink) return;
+
   const title = await getPageTitle(url);
 
   const record: NewLink = {
