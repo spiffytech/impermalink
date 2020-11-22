@@ -20,26 +20,6 @@ publicRouter.use((req, res, next) => {
   return void next();
 });
 
-publicRouter.get("/manifest.json", (_req, res) => {
-  res.json({
-    name: "Impermalink",
-    short_name: "Impermalink",
-    lang: "en-US",
-    start_url: "/app",
-    display: "browser",
-    share_target: {
-      action: "/app/share-target/",
-      method: "POST",
-      enctype: "application/x-www-form-encoded",
-      params: {
-        title: "title",
-        text: "text",
-        url: "url",
-      },
-    },
-  });
-});
-
 publicRouter.get("/login", (req, res, next) => {
   try {
     if (req.session?.email) {

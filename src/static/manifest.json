@@ -1,0 +1,17 @@
+  {
+    "name": "Impermalink",
+    "short_name": "Impermalink",
+    "lang": "en-US",
+    "start_url": "/app",
+    "display": "browser",
+    "share_target": {
+      "action": "/app/share-target/",
+      "method": "POST",
+      "enctype": "application/x-www-form-encoded",
+      "params": {
+        "title": "title",
+        "text": "text",
+        "url": "url"
+      }
+    }
+  }
