@@ -1,9 +1,11 @@
 import express from "express";
+import Joi from "joi";
 import mime from "mime";
 
 import db from "../lib/db";
 import * as linkAdder from "../lib/linkAdder";
 import { User } from "../lib/types";
+import validators from "../lib/validators";
 
 const apiRouter = express.Router();
 apiRouter.use((req, res, next) => {
@@ -36,10 +38,12 @@ apiRouter.post("/addLink", async (req, res) => {
         received: req.headers["content-type"] ?? null,
       });
     }
-    if (!req.body) {
+    try {
+      Joi.assert(req.body, validators.url);
+    } catch {
       res.status(400);
       return void res.json({
-        error: "Must supply a URL as the POST data body",
+        error: "Must supply a URL as the POST body",
       });
     }
 
@@ -47,7 +51,7 @@ apiRouter.post("/addLink", async (req, res) => {
 
     res.json({ message: "Successfully added your link" });
   } catch (ex) {
-    console.log(ex);
+    console.error(ex);
     res.status(500);
     res.json({ error: "Unknown error occurred" });
   }

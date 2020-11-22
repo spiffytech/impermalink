@@ -1,7 +1,10 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
+import Joi from "joi";
 
 import db from "../lib/db";
+import * as linkAdder from "../lib/linkAdder";
 import { Link } from "../lib/types";
+import validators from "../lib/validators";
 
 const minLinkGroupSize = 3;
 
@@ -12,13 +15,17 @@ appRouter.use((req, res, next) => {
     res.redirect(307, "/login");
     return void res.end();
   }
+
   res.locals.render = (view: string, options?: object) => {
     res.render(view, { userEmail: req.session!.email, ...options });
   };
+
+  res.locals.email = req.session.email;
+
   return void next();
 });
 
-appRouter.get("/", (req, res, next) => {
+async function renderLinkList(req: Request, res: Response, error?: string) {
   const linksLinear: (Link & { linksToDomain: number })[] = db
     .prepare(
       "select *, count(domain) as linksToDomain from links where email=? group by domain order by linksToDomain desc, dateSaved desc"
@@ -41,7 +48,37 @@ appRouter.get("/", (req, res, next) => {
 
   res.locals.render("app/home", {
     linkGroups: linkGroupsToRender,
+    error,
   });
+}
+
+appRouter.post("/addLink", async (req, res) => {
+  const { newLink } = req.body;
+
+  try {
+    Joi.assert(newLink, validators.url);
+  } catch {
+    res.status(400);
+    return renderLinkList(
+      req,
+      res,
+      "Link's gotta actually be a link to a real place"
+    );
+  }
+
+  try {
+    await linkAdder.add(res.locals.email, newLink);
+    res.redirect(302, "/app");
+  } catch (ex) {
+    console.error(ex);
+    return renderLinkList(
+      req,
+      res,
+      "An unknown error occurred trying to save your link"
+    );
+  }
 });
+
+appRouter.get("/", (req, res) => renderLinkList(req, res));
 
 export default appRouter;
