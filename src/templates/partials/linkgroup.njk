@@ -1,0 +1,8 @@
+<section>
+  <header>{{linkGroup.domain}}</header>
+  <ul>
+    {% for link in linkGroup.links %}
+      {% include "partials/link.njk" %}
+    {% endfor %}
+  </ul>
+</section>

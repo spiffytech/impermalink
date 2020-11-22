@@ -1,0 +1,55 @@
+{% extends "partials/layout.njk" %}
+
+{% block main %}
+  <form action="/login" method="POST">
+    {% if formErrors.length %}
+      <article class="message is-danger">
+        <div class="message-header">
+          <p>Watch out, an error!</p>
+        </div>
+        <div class="message-body">
+          <ul>
+            {% for formError in formErrors%}
+              <li>{{ formError.message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </article>
+    {% endif %}
+    <div class="field">
+      <label class="label">Email</label>
+      <div class="control has-icons-left has-icons-right">
+        <span class="icon is-small is-left">
+          <i class="fas fa-user"></i>
+        </span>
+        <input class="input" type="email" name="email"
+      placeholder="HomeStarRunner@StrongBadia.net" required {% if email %}
+      value="{{email}}" {% endif %}/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Password</label>
+      <div class="control has-icons-left has-icons-right">
+        <span class="icon is-small is-left">
+          <i class="fas fa-key"></i>
+        </span>
+        <input
+        class="input"
+        type="password"
+        name="password"
+        placeholder="Population:Tire"
+        required
+        minlength="8"
+/>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button class="button is-primary" type="submit">Lemme in!</button>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}

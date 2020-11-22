@@ -77,7 +77,6 @@ publicRouter.post("/login", async (req, res, next) => {
       formErrors: ex.details ?? [{ message: ex.message }],
       email,
     });
-    next();
   }
 });
 

@@ -29,7 +29,9 @@ appRouter.get("/", (req, res, next) => {
   const linkGroups: Map<string, Link[]> = new Map();
   linksLinear.forEach((link) => {
     const domain =
-      link.linksToDomain >= minLinkGroupSize ? link.domain : "Misc.";
+      link.linksToDomain >= minLinkGroupSize
+        ? link.domain
+        : "From around the Web";
     linkGroups.set(domain, [...(linkGroups.get(domain) ?? []), link]);
   });
 

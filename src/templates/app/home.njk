@@ -1,0 +1,10 @@
+{% extends "partials/layout.njk" %}
+
+{% block main %}
+    {% for linkGroup in linkGroups %}
+        {% include "partials/linkgroup.njk" %}
+    {% endfor %}
+    {% if not linkGroups.length%}
+        <p>You stare into the abyss and emptiness stares back</p>
+    {% endif %}
+{% endblock %}

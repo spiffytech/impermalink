@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Impermalink {% block title %}- Links for Later{% endblock %}
+    </title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"
+/>
+    <link rel="manifest" href="static/manifest.json"/>
+
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="application-name" content="Impermalink"/>
+    <meta name="apple-mobile-web-app-title" content="Impermalink"/>
+    <meta name="msapplication-starturl" content="/app"/>
+  </head>
+  <body>
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">Impermalink</a>
+
+        <a
+          role="button"
+          class="navbar-burger burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbarMenu"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="navbarMenu" class="navbar-menu">
+        <div class="navbar-end">
+          <div class="navbar-item">
+            {% if userEmail %}
+              {% if isOutsideApp%}
+                <div class="buttons">
+                  <a class="button is-primary" href="/app">
+                    <strong>Go to app</strong>
+                  </a>
+                {% endif %}
+                <form action="/logout" method="POST">
+                  <button class="button is-light" type="submit">Log Out</button>
+                </form>
+              </div>
+            {% else %}
+              <div class="buttons">
+                <a class="button is-primary" href="/signup">
+                  <strong>Sign up</strong>
+                </a>
+                <a class="button is-light" href="/login">Log in </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    {% block main %}{% endblock %}
+
+    <script type="text/javascript">
+      // Toggles the hamburger menu. Copy/pasted from https://bulma.io/documentation/components/navbar/
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array
+          .prototype
+          .slice
+          .call(document.querySelectorAll(".navbar-burger"), 0);
+
+        // Check if there are any navbar burgers
+        if ($navbarBurgers.length > 0) {
+          // Add a click event on each of them
+          $navbarBurgers.forEach((el) => {
+            el.addEventListener("click", () => {
+              // Get the target from the "data-target" attribute
+              const target = el.dataset.target;
+              const $target = document.getElementById(target);
+
+              // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+              el
+                .classList
+                .toggle("is-active");
+              $target
+                .classList
+                .toggle("is-active");
+            });
+          });
+        }
+      });
+    </script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
+    ></script>
+  </body>
+</html>

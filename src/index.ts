@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 import express from "express";
-import mustacheExpress from "mustache-express";
+import nunjucks from "nunjucks";
 
 import apiRouter from "./routers/apiRouter";
 import appRouter from "./routers/appRouter";
@@ -31,12 +31,11 @@ app.use(
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
-app.set("views", path.join(__dirname, "templates"));
-app.set("view engine", "mustache.html");
-app.engine(
-  "mustache.html",
-  mustacheExpress(path.join(__dirname, "templates", "partials"))
-);
+nunjucks.configure(path.join(__dirname, "templates"), {
+  autoescape: true,
+  express: app,
+});
+app.set("view engine", "njk");
 
 const port = parseInt(process.env.PORT ?? "3000");
 
