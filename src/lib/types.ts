@@ -10,7 +10,7 @@ export interface User {
 export interface Link {
   id: number;
   email: string;
-  domain: string | null;
+  domain: string;
   url: string;
   title: string | null;
   dateSaved: string;

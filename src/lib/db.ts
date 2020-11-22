@@ -15,7 +15,7 @@ const migrations: string[] = [
   create table links (
         id integer primary key,
         email text not null,
-        domain text,
+        domain text not null,
         url text not null,
         title text,
         dateSaved text not NULL DEFAULT (datetime('now', 'localtime')),
