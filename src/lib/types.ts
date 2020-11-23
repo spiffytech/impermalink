@@ -13,6 +13,7 @@ export interface Link {
   domain: string;
   url: string;
   title: string | null;
+  description: string | null;
   dateSaved: string;
   dateDeleted: string | null;
 }

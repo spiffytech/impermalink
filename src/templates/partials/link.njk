@@ -1,9 +1,10 @@
 <article class="border border-gray-300 bg-gray-50 rounded-lg shadow-sm flex items-stretch justify-between">
     <a href="{{ link.url }}" class="min-w-0 p-2">
         <header class="text-lg">{{ link.title }}</header>
-        <p class="block text-sm italic text-gray-500 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
+        <p class="block text-xs italic text-gray-500 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
             {{ link.url }}
         </p>
+        <p class="text-sm text-gray-800 italic">{{ link.description }}</p>
     </a>
 
     {% if not link.dateDeleted %}

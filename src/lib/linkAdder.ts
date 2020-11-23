@@ -15,17 +15,27 @@ function parseUrl(urlRaw: string): [string, string] {
   }
 }
 
-async function getPageTitle(url: string): Promise<string> {
+async function getPageFields(url: string): Promise<[string, string | null]> {
   try {
     // Timeout is arbitrary, just there to provide nominal mitigation against
     // slowloris-style attacks
     const response = await axios.get(url, { timeout: 30000 });
     if (mime.getExtension(response.headers["content-type"]) === "html") {
       const $ = cheerio.load(response.data);
-      const titleTagText = $("title").text();
-      return titleTagText || "Untitled";
+      // Arbitrarily limit field size to the size of a tweet, just so we don't
+      // get our DB spammed with some bonkers description
+      const maxFieldSize = 280;
+      const titleTagText = $("title").text().slice(0, maxFieldSize);
+      const title = titleTagText || "Untitled";
+      const description =
+        $('meta[name="description"]').attr("content")?.slice(0, maxFieldSize) ||
+        null;
+      return [title, description];
     } else {
-      return `Untitled ${mime.getExtension(response.headers["content-type"])}`;
+      return [
+        `Untitled ${mime.getExtension(response.headers["content-type"])}`,
+        null,
+      ];
     }
   } catch (ex) {
     const error: Error & { details?: any } = new Error("Error fetching URL");
@@ -46,17 +56,18 @@ export async function add(email: string, urlRaw: string) {
     .get(email, url);
   if (alreadyHaveLink) return;
 
-  const title = await getPageTitle(url);
+  const [title, description] = await getPageFields(url);
 
   const record: NewLink = {
     email,
     url,
     domain,
     title,
+    description,
   };
   try {
     db.prepare(
-      "insert into links (email, url, domain, title) values (?, ?, ?, ?)"
+      "insert into links (email, url, domain, title, description) values (?, ?, ?, ?, ?)"
     ).run(...Object.values(record));
   } catch (ex) {
     console.error(ex);

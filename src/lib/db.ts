@@ -18,6 +18,7 @@ const migrations: string[] = [
         domain text not null,
         url text not null,
         title text,
+        description text,
         dateSaved text not NULL DEFAULT (datetime('now', 'localtime')),
         dateDeleted text
       )`,
