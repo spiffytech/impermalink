@@ -1,23 +1,23 @@
-<article id="link-{{ link.id }}" class="border border-gray-300 bg-gray-50 hover:bg-gray-200 rounded-lg shadow-sm flex items-stretch justify-between h-full">
-    <a href="{{ link.url }}" class="link min-w-0 w-full p-2" data-id="{{ link.id }}" {% if link.dateDeleted %} data-is-deleted="true" {% endif %} rel="noopener noreferrer" target="_blank">
+<article id="link-{{ link.id }}" class="border border-gray-300 bg-gray-50 rounded-lg shadow-sm h-full">
+    {% if not link.dateDeleted %}
+        <form title="Send link to the recycle bin" class="float-right border-l border-b border-gray-500 rounded-bl-lg flex-none flex items-center bg-gray-50 hover:bg-gray-200" action="/app/moveLinkToRecycleBin?linkId={{ link.id }}" method="POST">
+            <button class="p-4 h-full" type="submit">
+                <i class="far fa-trash-alt fa-lg"></i>
+            </button>
+        </form>
+    {% else %}
+        <form title="Link will be deleted soon. Click to remove from the recycle bin." class="float-right border-l border-b border-gray-500 rounded-bl-lg flex-none flex items-center bg-gray-50 hover:bg-gray-200" action="/app/undeleteLink?linkId={{ link.id }}" method="POST">
+            <button class="p-4 h-full" type="submit">
+                <i class="fas fa-hourglass-end fa-lg"></i>
+            </button>
+        </form>
+    {% endif %}
+
+    <a href="{{ link.url }}" class="link block h-full p-2 hover:bg-gray-200" data-id="{{ link.id }}" {% if link.dateDeleted %} data-is-deleted="true" {% endif %} rel="noopener noreferrer" target="_blank">
         <header class="text-lg" title="{{ link.title }}">{{ link.title | truncate(140) }}</header>
         <p title="{{ link.url }}" class="block text-xs italic text-gray-500 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
             {{ link.url }}
         </p>
         <p class="text-sm text-gray-800 italic">{{ link.description }}</p>
     </a>
-
-    {% if not link.dateDeleted %}
-        <form title="Send link to the recycle bin" class="border-l border-gray-500 flex-none flex items-center" action="/app/moveLinkToRecycleBin?linkId={{ link.id }}" method="POST">
-            <button class="p-4 h-full" type="submit">
-                <i class="far fa-trash-alt fa-lg"></i>
-            </button>
-        </form>
-    {% else %}
-        <form title="Link will be deleted soon. Click to remove from the recycle bin." class="border-l border-gray-500 flex-none flex items-center" action="/app/undeleteLink?linkId={{ link.id }}" method="POST">
-            <button class="p-4 h-full" type="submit">
-                <i class="fas fa-hourglass-end fa-lg"></i>
-            </button>
-        </form>
-    {% endif %}
 </article>
