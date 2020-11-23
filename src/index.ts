@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 import express from "express";
+import morgan from "morgan";
 import nunjucks from "nunjucks";
 
 import apiRouter from "./routers/apiRouter";
@@ -20,6 +21,7 @@ if (!process.env.SESSION_KEY) {
 }
 
 const app = express();
+app.use(morgan("combined"));
 app.use(
   cookieSession({
     name: "impermalink-session",
@@ -44,6 +46,7 @@ app.use("/app", appRouter);
 app.use(publicRouter);
 app.use("/static", express.static(path.join(__dirname, "static")));
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+process.on("SIGINT", () => server.close());

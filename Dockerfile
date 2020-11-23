@@ -9,7 +9,8 @@ WORKDIR /app
 ADD package*json ./
 RUN npm install
 
-ADD * ./
-RUN npm build
+ADD . ./
+RUN npm run build
 
+RUN mkdir -p /data
 CMD node dist/index.js

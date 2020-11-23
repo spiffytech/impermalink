@@ -132,13 +132,12 @@ publicRouter.post("/signup", async (req, res, next) => {
     req.session!.email = email;
     res.redirect(302, "/app");
   } catch (ex) {
+    console.error(ex);
     res.status(400);
-    console.log(JSON.stringify(ex.details));
     res.locals.render("signup", {
       formErrors: ex.details ?? [{ message: ex.message }],
       email,
     });
-    next();
   }
 });
 
