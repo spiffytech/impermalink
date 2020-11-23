@@ -31,4 +31,9 @@
     {% if not linkGroups.length%}
         <p>You stare into the abyss and emptiness stares back</p>
     {% endif %}
+    <style>
+        .linkGroup-header::-webkit-details-marker {
+            display: none;
+        }
+    </style>
 {% endblock %}

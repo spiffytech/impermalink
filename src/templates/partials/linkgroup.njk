@@ -1,10 +1,12 @@
-<section class="mb-8 last:mb-0">
-  <header class="text-2xl bg-gray-200 text-gray-700 rounded-lg p-2 mb-2">
-    <span class="mr-1">
-      <i class="fas fa-globe-americas"></i>
-    </span>
-    <span>{{linkGroup.domain | replace(r/^www\./, '')}}</span>
-  </header>
+<details class="mb-8 last:mb-0">
+  <summary class="linkGroup-header list-none">
+    <header class="text-2xl bg-gray-200 text-gray-700 rounded-lg p-2 mb-2">
+      <span class="mr-1">
+        <i class="fas fa-globe-americas"></i>
+      </span>
+      <span>{{linkGroup.domain | replace(r/^www\./, '')}}</span>
+    </header>
+  </summary>
   <ul class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min">
     {% for link in linkGroup.links %}
       <li>
@@ -12,4 +14,4 @@
       </li>
     {% endfor %}
   </ul>
-</section>
+</details>
