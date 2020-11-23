@@ -26,17 +26,24 @@ appRouter.use((req, res, next) => {
 });
 
 async function renderLinkList(req: Request, res: Response, error?: string) {
-  const linksLinear: (Link & { linksToDomain: number })[] = db
-    .prepare(
-      "select *, count(domain) as linksToDomain from links where email=? group by domain order by linksToDomain desc, dateSaved desc"
+  const countsByDomain = new Map<string, number>(
+    Array.from(
+      db
+        .prepare(
+          "select domain, count(domain) as numLinks from links where email=? group by domain"
+        )
+        .all(res.locals.email)
+        .map(({ domain, numLinks }) => [domain, numLinks])
     )
-    .all(req.session!.email);
-  console.log(JSON.stringify(linksLinear));
+  );
+  const linksLinear: (Link & { linksToDomain: number })[] = db
+    .prepare("select * from links where email=? order by dateSaved desc")
+    .all(res.locals.email);
 
   const linkGroups: Map<string, Link[]> = new Map();
   linksLinear.forEach((link) => {
     const domain =
-      link.linksToDomain >= minLinkGroupSize
+      countsByDomain.get(link.domain)! >= minLinkGroupSize
         ? link.domain
         : "From around the Web";
     linkGroups.set(domain, [...(linkGroups.get(domain) ?? []), link]);
