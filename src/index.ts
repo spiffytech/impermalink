@@ -41,6 +41,14 @@ app.set("view engine", "njk");
 
 const port = parseInt(process.env.PORT ?? "3000");
 
+publicRouter.get("/favicon.ico", (_req, res) =>
+  res.redirect(301, "/static/favicon.ico")
+);
+// Service worker needs to be at / because browsers scope what they handle to
+// the folder they're found in
+publicRouter.get("/sw.js", (_req, res) =>
+  res.sendFile(path.join(__dirname, "static", "sw.js"))
+);
 app.use("/api", apiRouter);
 app.use("/app", appRouter);
 app.use(publicRouter);

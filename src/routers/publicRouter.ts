@@ -20,10 +20,6 @@ publicRouter.use((req, res, next) => {
   return void next();
 });
 
-publicRouter.get("/favicon.ico", (_req, res) =>
-  res.redirect(301, "/static/favicon.ico")
-);
-
 publicRouter.get("/login", (req, res, next) => {
   try {
     if (req.session?.email) {

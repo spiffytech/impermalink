@@ -68,7 +68,7 @@
       if ('serviceWorker' in navigator) {
         navigator
           .serviceWorker
-          .register('/static/sw.js');
+          .register('/sw.js', {scope: '/'});
       }
     </script>
 
