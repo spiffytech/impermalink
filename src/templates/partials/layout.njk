@@ -49,5 +49,21 @@
       defer
       src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"
     ></script>
+
+    <script type="text/javascript">
+      Array
+        .from(document.querySelectorAll('a.link'))
+        .forEach(link => {
+          link.addEventListener('click', async () => {
+            if (link.getAttribute('data-is-deleted')) {
+              return;
+            }
+            await fetch(`/app/moveLinkToRecycleBin?linkId=${link.getAttribute('data-id')}`, {method: 'post'});
+            window
+              .location
+              .reload();
+          });
+        });
+    </script>
   </body>
 </html>

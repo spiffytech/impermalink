@@ -49,6 +49,7 @@ async function renderLinkList(req: Request, res: Response, error?: string) {
   res.locals.render("app/home", {
     linkGroups: linkGroupsToRender,
     error,
+    htmx: Boolean(req.headers["hx-request"]),
   });
 }
 
@@ -83,8 +84,11 @@ appRouter.post("/moveLinkToRecycleBin", (req, res) => {
   if (!req.query.linkId) {
     return void res.redirect(302, req.headers["referer"] || "/app");
   }
+  // Don't update the deletion date if it's already set. UI shouldn't allow
+  // this, but you never know. If we want to reset a deletion date, we'll create
+  // a dedicated endpoint to do that.
   db.prepare(
-    "update links set dateDeleted=datetime('now', 'localtime') where id=? and email=?"
+    "update links set dateDeleted=datetime('now', 'localtime') where id=? and email=? and dateDeleted is null"
   ).run(req.query.linkId, res.locals.email);
 
   db.prepare(

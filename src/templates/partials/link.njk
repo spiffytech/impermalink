@@ -1,5 +1,5 @@
 <article class="border border-gray-300 bg-gray-50 rounded-lg shadow-sm flex items-stretch justify-between">
-    <a href="{{ link.url }}" class="min-w-0 p-2">
+    <a href="{{ link.url }}" class="link min-w-0 p-2" data-id="{{ link.id }}" {% if link.dateDeleted %} data-is-deleted="true" {% endif %} rel="noopener noreferrer" target="_blank">
         <header class="text-lg">{{ link.title }}</header>
         <p class="block text-xs italic text-gray-500 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
             {{ link.url }}

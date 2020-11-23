@@ -1,4 +1,6 @@
-{% extends "partials/layout.njk" %}
+{% if not htmx %}
+    {% extends "partials/layout.njk" %}
+{% endif %}
 
 {% block main %}
     <form action="/app/addLink" method="POST">

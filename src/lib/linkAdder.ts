@@ -24,12 +24,13 @@ async function getPageFields(url: string): Promise<[string, string | null]> {
       const $ = cheerio.load(response.data);
       // Arbitrarily limit field size to the size of a tweet, just so we don't
       // get our DB spammed with some bonkers description
-      const maxFieldSize = 280;
-      const titleTagText = $("title").text().slice(0, maxFieldSize);
+      const maxFieldLength = 280;
+      const titleTagText = $("title").text().slice(0, maxFieldLength);
       const title = titleTagText || "Untitled";
       const description =
-        $('meta[name="description"]').attr("content")?.slice(0, maxFieldSize) ||
-        null;
+        $('meta[name="description"]')
+          .attr("content")
+          ?.slice(0, maxFieldLength) || null;
       return [title, description];
     } else {
       return [
