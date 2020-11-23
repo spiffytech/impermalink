@@ -87,6 +87,18 @@ appRouter.post("/addLink", async (req, res) => {
   }
 });
 
+appRouter.post("/share-target", async (req, res) => {
+  try {
+    await linkAdder.add(res.locals.email, req.body.text);
+    res.redirect(302, "/app");
+  } catch (ex) {
+    console.error(ex);
+    res.render("app/400-error", {
+      error: "Oh, noes! An error happened trying to view your link!",
+    });
+  }
+});
+
 appRouter.post("/moveLinkToRecycleBin", (req, res) => {
   if (!req.query.linkId) {
     return void res.redirect(302, req.headers["referer"] || "/app");
