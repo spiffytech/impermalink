@@ -1,8 +1,8 @@
-<section class="p-2 mb-2 last:mb-0 border border-gray-300 bg-gray-50 rounded-lg shadow-sm">
+<section class="mb-2 last:mb-0">
   <header class="text-gray-500">{{linkGroup.domain | replace(r/^www\./, '')}}</header>
-  <ul>
+  <ul class="flex flex-wrap">
     {% for link in linkGroup.links %}
-      <li class="mb-4 last:mb-0">
+      <li class="mb-4 last:mb-0 w-1/2 lg:w-1/5 mr-4 last:mr-0">
         {% include "partials/link.njk" %}
       </li>
     {% endfor %}

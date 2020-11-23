@@ -79,6 +79,39 @@ appRouter.post("/addLink", async (req, res) => {
   }
 });
 
+appRouter.post("/moveLinkToRecycleBin", (req, res) => {
+  if (!req.query.linkId) {
+    return void res.redirect(302, req.headers["referer"] || "/app");
+  }
+  db.prepare(
+    "update links set dateDeleted=datetime('now', 'localtime') where id=? and email=?"
+  ).run(req.query.linkId, res.locals.email);
+
+  db.prepare(
+    "delete from links where email=? and dateDeleted is not null and id not in (select id from links where email=? and dateDeleted is not null order by dateDeleted desc limit ?)"
+  ).run(res.locals.email, res.locals.email, 1);
+
+  return void res.redirect(302, req.headers["referer"] || "/app");
+});
+
+appRouter.post("/undeleteLink", (req, res) => {
+  if (!req.query.linkId) {
+    return void res.redirect(302, req.headers["referer"] || "/app");
+  }
+  db.prepare("update links set dateDeleted=null where id=? and email=?").run(
+    req.query.linkId,
+    res.locals.email
+  );
+
+  return void res.redirect(302, req.headers["referer"] || "/app");
+});
+
+appRouter.post("/emptyRecycleBin", (req, res) => {
+  db.prepare("delete from links where email=? and dateDeleted is not null").run(
+    res.locals.email
+  );
+});
+
 appRouter.get("/", (req, res) => renderLinkList(req, res));
 
 export default appRouter;

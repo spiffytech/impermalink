@@ -1,4 +1,22 @@
-<article>
-    <header class="text-lg">{{ link.title }}</header>
-    <p class="text-sm italic text-gray-500 underline">{{ link.url }}</p>
+<article class="border border-gray-300 bg-gray-50 rounded-lg shadow-sm flex items-stretch justify-between">
+    <a href="{{ link.url }}" class="min-w-0 p-2">
+        <header class="text-lg">{{ link.title }}</header>
+        <p class="block text-sm italic text-gray-500 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
+            {{ link.url }}
+        </p>
+    </a>
+
+    {% if not link.dateDeleted %}
+        <form class="border-l border-gray-500 flex-none flex items-center" action="/app/moveLinkToRecycleBin?linkId={{ link.id }}" method="POST">
+            <button class="p-4 h-full" type="submit">
+                <i class="far fa-trash-alt fa-lg"></i>
+            </button>
+        </form>
+    {% else %}
+        <form class="border-l border-gray-500 flex-none flex items-center" action="/app/undeleteLink?linkId={{ link.id }}" method="POST">
+            <button class="p-4 h-full" type="submit">
+                <i class="fas fa-hourglass-half fa-lg"></i>
+            </button>
+        </form>
+    {% endif %}
 </article>
