@@ -102,7 +102,10 @@ appRouter.post("/moveLinkToRecycleBin", (req, res) => {
     "delete from links where email=? and dateDeleted is not null and id not in (select id from links where email=? and dateDeleted is not null order by dateDeleted desc limit ?)"
   ).run(res.locals.email, res.locals.email, 1);
 
-  return void res.redirect(302, req.headers["referer"] || "/app");
+  return void res.redirect(
+    302,
+    (req.headers["referer"] || "/app") + `#link-${req.query.linkId}`
+  );
 });
 
 appRouter.post("/undeleteLink", (req, res) => {
@@ -114,7 +117,10 @@ appRouter.post("/undeleteLink", (req, res) => {
     res.locals.email
   );
 
-  return void res.redirect(302, req.headers["referer"] || "/app");
+  return void res.redirect(
+    302,
+    (req.headers["referer"] || "/app") + `#link-${req.query.linkId}`
+  );
 });
 
 appRouter.post("/emptyRecycleBin", (req, res) => {
