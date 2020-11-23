@@ -7,7 +7,7 @@
     </title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"
+      href="/static/tailwind.css"
 />
     <link rel="manifest" href="static/manifest.json"/>
 
@@ -17,48 +17,27 @@
     <meta name="apple-mobile-web-app-title" content="Impermalink"/>
     <meta name="msapplication-starturl" content="/app"/>
   </head>
-  <body>
-    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">Impermalink</a>
 
-        <a
-          role="button"
-          class="navbar-burger burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarMenu"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
+  <body class="md:mx-8">
+    <nav class="flex justify-between py-2 mb-2 px-8 -mx-8 border-b-2" role="navigation" aria-label="main navigation">
+      <a class="navbar-item text-xl font-semibold" href="/">Impermalink</a>
 
-      <div id="navbarMenu" class="navbar-menu">
-        <div class="navbar-end">
-          <div class="navbar-item">
-            {% if userEmail %}
-              {% if isOutsideApp%}
-                <div class="buttons">
-                  <a class="button is-primary" href="/app">
-                    <strong>Go to app</strong>
-                  </a>
-                {% endif %}
-                <form action="/logout" method="POST">
-                  <button class="button is-light" type="submit">Log Out</button>
-                </form>
-              </div>
-            {% else %}
-              <div class="buttons">
-                <a class="button is-primary" href="/signup">
-                  <strong>Sign up</strong>
-                </a>
-                <a class="button is-light" href="/login">Log in </a>
-              </div>
-            {% endif %}
-          </div>
-        </div>
+      <div>
+        {% if userEmail %}
+          {% if isOutsideApp%}
+            <a href="/app">
+              <strong>Go to app</strong>
+            </a>
+          {% endif %}
+          <form action="/logout" method="POST">
+            <button type="submit">Log Out</button>
+          </form>
+        {% else %}
+          <a href="/signup">
+            <strong>Sign up</strong>
+          </a>
+          <a href="/login">Log in </a>
+        {% endif %}
       </div>
     </nav>
 
@@ -66,36 +45,6 @@
       {% block main %}{% endblock %}
     </main>
 
-    <script type="text/javascript">
-      // Toggles the hamburger menu. Copy/pasted from https://bulma.io/documentation/components/navbar/
-      document.addEventListener("DOMContentLoaded", () => {
-        // Get all "navbar-burger" elements
-        const $navbarBurgers = Array
-          .prototype
-          .slice
-          .call(document.querySelectorAll(".navbar-burger"), 0);
-
-        // Check if there are any navbar burgers
-        if ($navbarBurgers.length > 0) {
-          // Add a click event on each of them
-          $navbarBurgers.forEach((el) => {
-            el.addEventListener("click", () => {
-              // Get the target from the "data-target" attribute
-              const target = el.dataset.target;
-              const $target = document.getElementById(target);
-
-              // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-              el
-                .classList
-                .toggle("is-active");
-              $target
-                .classList
-                .toggle("is-active");
-            });
-          });
-        }
-      });
-    </script>
     <script
       defer
       src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"

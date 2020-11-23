@@ -4,7 +4,9 @@
   "description": "A place for transient links you're gonna get to later",
   "main": "dist/index.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "postinstall": "npm run tailwind",
+    "tailwind": "npx tailwindcss-cli@latest build src/style.css -o src/static/tailwind.css"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
     "@types/node": "^14.14.7",
     "@types/nunjucks": "^3.1.3",
     "@types/source-map-support": "^0.5.3",
+    "tailwindcss": "^2.0.1",
     "ts-node-dev": "^1.0.0",
     "typescript": "^4.0.5"
   },

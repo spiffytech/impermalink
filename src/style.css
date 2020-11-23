@@ -1,0 +1,9 @@
+@tailwind base; /* Preflight will be injected here */
+
+@tailwind components;
+
+@tailwind utilities;
+
+input {
+  @apply px-2 py-1 border border-gray-300 rounded-lg my-2;
+}
