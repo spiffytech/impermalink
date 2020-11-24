@@ -5,21 +5,14 @@ import mime from "mime";
 import db from "../lib/db";
 import { NewLink } from "../lib/types";
 
-function parseUrl(urlRaw: string): [string, string] {
-  try {
-    const url = new URL(urlRaw);
-    // Return stringified URL so we know it's a nice standardized (sanitized?) string
-    return [url.toString(), url.hostname];
-  } catch (ex) {
-    throw new Error("URL could not be parsed");
-  }
-}
-
-async function getPageFields(url: string): Promise<[string, string | null]> {
+async function getPageFields(
+  url: string
+): Promise<[string, string, string | null]> {
   try {
     // Timeout is arbitrary, just there to provide nominal mitigation against
     // slowloris-style attacks
     const response = await axios.get(url, { timeout: 30000 });
+    const finalURL = response.request.res.responseUrl;
     if (mime.getExtension(response.headers["content-type"]) === "html") {
       const $ = cheerio.load(response.data);
       // Arbitrarily limit field size to the size of a tweet, just so we don't
@@ -31,9 +24,10 @@ async function getPageFields(url: string): Promise<[string, string | null]> {
         $('meta[name="description"]')
           .attr("content")
           ?.slice(0, maxFieldLength) || null;
-      return [title, description];
+      return [finalURL, title, description];
     } else {
       return [
+        finalURL,
         `Untitled ${mime.getExtension(response.headers["content-type"])}`,
         null,
       ];
@@ -50,19 +44,21 @@ async function getPageFields(url: string): Promise<[string, string | null]> {
 }
 
 export async function add(email: string, urlRaw: string) {
-  const [url, domain] = parseUrl(urlRaw);
+  const [url, title, description] = await getPageFields(urlRaw);
 
+  // I don't like putting this check _after_ the URL fetch, but I also don't
+  // want to store both the original + finalized URLs. And that'd still be
+  // abusable with minimal URL manipulation anyway, so it'd just prevent
+  // accidental duplications.
   const alreadyHaveLink = db
     .prepare("select 1 from links where email=? and url=?")
     .get(email, url);
   if (alreadyHaveLink) return;
 
-  const [title, description] = await getPageFields(url);
-
   const record: NewLink = {
     email,
     url,
-    domain,
+    domain: new URL(url).hostname,
     title,
     description,
   };
