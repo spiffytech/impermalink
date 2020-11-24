@@ -7,7 +7,7 @@ import * as linkAdder from "../lib/linkAdder";
 import { Link } from "../lib/types";
 import validators from "../lib/validators";
 
-const minLinkGroupSize = 3;
+const minLinkGroupSize = 2;
 
 const appRouter = express.Router();
 
