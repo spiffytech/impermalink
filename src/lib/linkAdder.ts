@@ -13,7 +13,8 @@ async function getPageFields(
     // slowloris-style attacks
     const response = await axios.get(url, { timeout: 30000 });
     const finalURL = response.request.res.responseUrl;
-    if (mime.getExtension(response.headers["content-type"]) === "html") {
+    const extension = mime.getExtension(response.headers["content-type"]);
+    if (extension === "html") {
       const $ = cheerio.load(response.data);
       // Arbitrarily limit field size to the size of a tweet, just so we don't
       // get our DB spammed with some bonkers description
@@ -25,6 +26,13 @@ async function getPageFields(
           .attr("content")
           ?.slice(0, maxFieldLength) || null;
       return [finalURL, title, description];
+      // Handles YouTube embed links
+    } else if (
+      extension === "xml" &&
+      (response.data as string).includes("<oembed>")
+    ) {
+      const title = cheerio.load(response.data)("title").text() || "Untitled";
+      return [finalURL, title, ""];
     } else {
       return [
         finalURL,
