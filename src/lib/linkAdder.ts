@@ -21,10 +21,13 @@ async function getPageFields(
       const maxFieldLength = 280;
       const titleTagText = $("title").text().slice(0, maxFieldLength);
       const title = titleTagText || "Untitled";
+      const descriptionRaw = $('meta[name="description"]').attr("content");
       const description =
-        $('meta[name="description"]')
-          .attr("content")
-          ?.slice(0, maxFieldLength) || null;
+        (descriptionRaw &&
+          (descriptionRaw?.length > maxFieldLength
+            ? descriptionRaw?.slice(0, maxFieldLength) + "..."
+            : descriptionRaw)) ||
+        null;
       return [finalURL, title, description];
       // Handles YouTube embed links
     } else if (
