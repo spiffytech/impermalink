@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
 import Joi from "joi";
+import mime from "mime";
 
 import db from "../lib/db";
 import * as linkAdder from "../lib/linkAdder";
@@ -92,9 +93,16 @@ appRouter.post(
   "/share-target",
   cors({ origin: true, credentials: true }),
   async (req, res) => {
+    const url =
+      !req.headers["content-type"] ||
+      mime.getExtension(req.headers["content-type"]) === "txt"
+        ? req.body
+        : req.body.text;
+
     try {
-      await linkAdder.add(res.locals.email, req.body.text);
+      await linkAdder.add(res.locals.email, url);
     } catch (ex) {
+      console.error(url);
       console.error(ex);
       req.session!.flashError =
         "Oh, noes! An error happened trying to view your link!";

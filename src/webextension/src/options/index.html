@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Impermalink extension settings</title>
+</head>
+<body>
+	<h1>Impermalink</h1>
+	<form>
+		<input type="text" name="apiKey" />
+		<button type="submit">Save settings</button>
+	</form>
+
+	<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", () => {
+			document.querySelector('form input[name="apiKey"]').value = browser.storage.sync.get('apiKey');
+		});
+
+		document.querySelector('form').addEventListener('submit', e => {
+			e.preventDefault();
+			browser.storage.sync.set({
+				apiKey: document.querySelector('form input[name="apiKey"]').value
+			});
+		});
+	</script>
+</body>
+</html>
