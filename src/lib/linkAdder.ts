@@ -79,6 +79,7 @@ async function getPageFields(
         (await (await page.$('meta[name="description"]'))?.textContent()) ??
         null;
       const urlFromPlaywright = await page.url();
+      await pool.destroy(page);
 
       return [urlFromPlaywright, title, descriptionFromPlaywright];
     } else if (
