@@ -14,13 +14,13 @@ async function getPageFields(
     const response = await axios.get(url, { timeout: 30000 });
     const finalURL = response.request.res.responseUrl;
     const extension = mime.getExtension(response.headers["content-type"]);
+    const maxFieldLength = 280;
     if (extension === "html") {
       const $ = cheerio.load(response.data);
       // Arbitrarily limit field size to the size of a tweet, just so we don't
       // get our DB spammed with some bonkers description
-      const maxFieldLength = 280;
       const titleTagText = $("title").text().slice(0, maxFieldLength);
-      const title = titleTagText || "Untitled";
+      const title = titleTagText || "Untitled web page";
       const descriptionRaw = $('meta[name="description"]').attr("content");
       const description =
         (descriptionRaw &&
@@ -34,7 +34,9 @@ async function getPageFields(
       extension === "xml" &&
       (response.data as string).includes("<oembed>")
     ) {
-      const title = cheerio.load(response.data)("title").text() || "Untitled";
+      const title =
+        cheerio.load(response.data)("title").text().slice(0, maxFieldLength) ||
+        "Untitled XML file";
       return [finalURL, title, ""];
     } else {
       return [

@@ -17,7 +17,7 @@ float-right border-l border-b border-gray-500 rounded-bl-lg ml-2 flex-none flex 
             </form>
         {% endif %}
 
-        <a href="{{ link.url }}" class="link block h-full p-2 hover:bg-gray-200 transition-colors" data-id="{{ link.id }}" {% if link.dateDeleted %} data-is-deleted="true" {% endif %} rel="noopener noreferrer" target="_blank">
+        <a hx-post="/app/moveLinkToRecycleBin?linkId={{ link.id }}" hx-trigger="click" hx-select="main" hx-target="main" href="{{ link.url }}" class="link block h-full p-2 hover:bg-gray-200 transition-colors" data-id="{{ link.id }}" {% if link.dateDeleted %} data-is-deleted="true" {% endif %} rel="noopener noreferrer" target="_blank">
             <header class="text-lg" title="{{ link.title }}">{{ link.title | truncate(140) }}</header>
             <p title="{{ link.url }}" class="block text-xs italic text-gray-500 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
                 {{ link.url | replace(r/^https?:\/\/(www\.)?/, '') }}

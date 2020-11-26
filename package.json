@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && npm run tailwind && cp -r src/templates dist/ && cp -r src/static dist/",
+    "dev": "ts-node-dev --watch src/templates src/index.ts",
     "tailwind": "npx tailwindcss-cli@latest build src/style.css -o src/static/tailwind.css"
   },
   "repository": {
