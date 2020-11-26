@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 import express from "express";
+import geopattern from "geopattern";
 import morgan from "morgan";
 import nunjucks from "nunjucks";
 
@@ -36,11 +37,16 @@ app.use(
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
-nunjucks.configure(path.join(__dirname, "templates"), {
+const njEnv = nunjucks.configure(path.join(__dirname, "templates"), {
   autoescape: true,
   express: app,
 });
 app.set("view engine", "njk");
+
+njEnv.addFilter("pattern", (str: string) => {
+  const url = geopattern.generate(str, { color: "#f3f4f6" }).toDataUrl();
+  return `background-image: ${url};`;
+});
 
 const port = parseInt(process.env.PORT ?? "3000");
 
