@@ -8,9 +8,9 @@
       <span class="text-sm text-gray-500 italic">({{ linkGroup.links.length }})</span>
     </header>
   </summary>
-  <ul class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min">
+  <ul class="p-2 rounded-lg grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min bg-gradient-to-b from-gray-200" style="{{ linkGroup.domain | pattern }}">
     {% for link in linkGroup.links %}
-      <li>
+      <li class="contents">
         {% include "partials/link.njk" %}
       </li>
     {% endfor %}
