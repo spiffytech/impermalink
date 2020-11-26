@@ -14,6 +14,8 @@ import apiRouter from "./routers/apiRouter";
 import appRouter from "./routers/appRouter";
 import publicRouter from "./routers/publicRouter";
 
+import { pool } from "./lib/linkAdder";
+
 dotenv.config();
 
 if (!process.env.SESSION_KEY) {
@@ -57,4 +59,8 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
-process.on("SIGINT", () => server.close());
+process.on("SIGINT", async () => {
+  server.close();
+  await pool.drain();
+  await pool.clear();
+});

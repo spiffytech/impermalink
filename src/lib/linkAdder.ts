@@ -1,9 +1,44 @@
 import axios from "axios";
 import cheerio from "cheerio";
+import genericPool from "generic-pool";
 import mime from "mime";
+import playwright from "playwright";
 
 import db from "../lib/db";
 import { NewLink } from "../lib/types";
+
+let browser: playwright.Browser | null = null;
+const browserContextPageMap = new Map<
+  playwright.Page,
+  playwright.BrowserContext
+>();
+export const pool = genericPool.createPool(
+  {
+    async create() {
+      browser = browser ?? (await playwright.chromium.launch());
+      const context = await browser.newContext();
+      const page = await context.newPage();
+      browserContextPageMap.set(page, context);
+      return page;
+    },
+    async destroy(page: playwright.Page) {
+      await page.close();
+      const context = browserContextPageMap.get(page);
+      await context!.close();
+      browserContextPageMap.delete(page);
+      // Since we set the pool to always have a resource, zero open pages means
+      // we're draining the pool and need to clean up
+      if (Array.from(browserContextPageMap.values()).length === 0) {
+        await browser?.close();
+        browser = null;
+      }
+    },
+  },
+  {
+    min: 1,
+    max: 5,
+  }
+);
 
 async function getPageFields(
   url: string
@@ -20,7 +55,6 @@ async function getPageFields(
       // Arbitrarily limit field size to the size of a tweet, just so we don't
       // get our DB spammed with some bonkers description
       const titleTagText = $("title").text().slice(0, maxFieldLength);
-      const title = titleTagText || "Untitled web page";
       const descriptionRaw = $('meta[name="description"]').attr("content");
       const description =
         (descriptionRaw &&
@@ -28,9 +62,27 @@ async function getPageFields(
             ? descriptionRaw?.slice(0, maxFieldLength) + "..."
             : descriptionRaw)) ||
         null;
-      return [finalURL, title, description];
-      // Handles YouTube embed links
+
+      // Don't care if we're missing a description; lots of pages don't have //
+      // descriptions. But if we don't have a title, maybe it's an SPA and we //
+      // need to run client-side JS to get the title to appear. Twitter is this way.
+      if (titleTagText) {
+        return [finalURL, titleTagText, description];
+      }
+
+      const page = await pool.acquire();
+      // networkidle because Twitter doesn't have anything loaded by the 'load' event
+      await page.goto(url, { waitUntil: "networkidle" });
+
+      const title = await page.title();
+      const descriptionFromPlaywright =
+        (await (await page.$('meta[name="description"]'))?.textContent()) ??
+        null;
+      const urlFromPlaywright = await page.url();
+
+      return [urlFromPlaywright, title, descriptionFromPlaywright];
     } else if (
+      // Handles YouTube embed links
       extension === "xml" &&
       (response.data as string).includes("<oembed>")
     ) {

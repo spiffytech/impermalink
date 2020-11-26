@@ -1,8 +1,12 @@
-FROM node:12-alpine
+# Just use the official Playwright image instead of extracting the pieces to run
+# Playwright in Docker ourselves. It ties us to their choice of Ubuntu+Node
+# versions, but I don't expect that to be a very big deal.
+FROM mcr.microsoft.com/playwright:focal
 
 ENV DATA_DIR=/data
 
-RUN apk add build-base python-dev
+# For compiling better-sqlite3
+RUN apt update && apt install -y build-essential python-dev
 
 WORKDIR /app
 
