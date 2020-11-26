@@ -70,6 +70,11 @@ app.get("/health", (req, res) => {
 const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+process.on("SIGTERM", async () => {
+  server.close();
+  await pool.drain();
+  await pool.clear();
+});
 process.on("SIGINT", async () => {
   server.close();
   await pool.drain();
