@@ -103,6 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-db.sqlite
+db.sqlite*
 src/static/tailwind.css
 .vscode
