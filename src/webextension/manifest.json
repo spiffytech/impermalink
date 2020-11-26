@@ -16,12 +16,14 @@
   "page_action": {
     "default_icon": "icons/favicon-16x16.png",
     "default_title": "Impermalink -> save for later",
-    "default_popup": "src/page_action/page_action.html"
+    "show_matches": ["<all_urls>"]
   },
   "permissions": [
     "contextMenus",
     "storage",
     "cookies",
+    "tabs",
+    "notifications",
     "https://impermalink.spiffy.tech/app/share-target"
   ],
   "options_ui": {
