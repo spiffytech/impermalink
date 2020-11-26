@@ -12,6 +12,7 @@ import express from "express";
 import geopattern from "geopattern";
 import morgan from "morgan";
 import nunjucks from "nunjucks";
+const tailwindColors = require("tailwindcss/colors");
 
 import apiRouter from "./routers/apiRouter";
 import appRouter from "./routers/appRouter";
@@ -46,7 +47,9 @@ const njEnv = nunjucks.configure(path.join(__dirname, "templates"), {
 app.set("view engine", "njk");
 
 njEnv.addFilter("pattern", (str: string) => {
-  const url = geopattern.generate(str, { color: "#f3f4f6" }).toDataUrl();
+  const url = geopattern
+    .generate(str, { color: tailwindColors.warmGray[200] })
+    .toDataUrl();
   return `background-image: ${url};`;
 });
 
@@ -80,6 +83,10 @@ if (cluster.isMaster) {
     cluster.fork();
   }
   process.on("SIGTERM", async () => {
+    await pool.drain();
+    await pool.clear();
+  });
+  process.on("SIGINT", async () => {
     await pool.drain();
     await pool.clear();
   });
