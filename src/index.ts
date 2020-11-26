@@ -1,6 +1,8 @@
 import sourceMapSupport from "source-map-support";
 sourceMapSupport.install();
 
+import cluster from "cluster";
+import { cpus } from "os";
 import path from "path";
 
 import bodyParser from "body-parser";
@@ -73,16 +75,26 @@ app.get("/health", (req, res) => {
   }
 });
 
-const server = app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
-process.on("SIGTERM", async () => {
-  server.close();
-  await pool.drain();
-  await pool.clear();
-});
-process.on("SIGINT", async () => {
-  server.close();
-  await pool.drain();
-  await pool.clear();
-});
+if (cluster.isMaster) {
+  for (let i = 0; i < cpus().length; i++) {
+    cluster.fork();
+  }
+  process.on("SIGTERM", async () => {
+    await pool.drain();
+    await pool.clear();
+  });
+} else {
+  const server = app.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+  });
+  process.on("SIGTERM", async () => {
+    server.close();
+    await pool.drain();
+    await pool.clear();
+  });
+  process.on("SIGINT", async () => {
+    server.close();
+    await pool.drain();
+    await pool.clear();
+  });
+}
