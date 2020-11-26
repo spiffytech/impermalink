@@ -14,6 +14,7 @@ import apiRouter from "./routers/apiRouter";
 import appRouter from "./routers/appRouter";
 import publicRouter from "./routers/publicRouter";
 
+import db from "./lib/db";
 import { pool } from "./lib/linkAdder";
 
 dotenv.config();
@@ -55,6 +56,16 @@ app.use("/api", apiRouter);
 app.use("/app", appRouter);
 app.use(publicRouter);
 app.use("/static", express.static(path.join(__dirname, "static")));
+
+app.get("/health", (req, res) => {
+  try {
+    db.prepare("select 1 from links limit 1").get();
+    res.send("ok");
+  } catch (ex) {
+    res.status(500);
+    res.send("fail");
+  }
+});
 
 const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
