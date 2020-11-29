@@ -20,6 +20,10 @@ publicRouter.use((req, res, next) => {
   return void next();
 });
 
+publicRouter.get("/authState", (req, res) => {
+  res.json({ authed: Boolean(req.session?.email) });
+});
+
 publicRouter.get("/login", (req, res, next) => {
   try {
     if (req.session?.email) {
