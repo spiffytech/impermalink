@@ -8,35 +8,41 @@ import db from "../lib/db";
 import { NewLink } from "../lib/types";
 
 let browser: playwright.Browser | null = null;
-const browserContextPageMap = new Map<
-  playwright.Page,
-  playwright.BrowserContext
->();
 export const pool = genericPool.createPool(
   {
     async create() {
-      browser = browser ?? (await playwright.chromium.launch());
-      const context = await browser.newContext();
-      const page = await context.newPage();
-      browserContextPageMap.set(page, context);
-      return page;
+      console.log("Creating Playwright");
+      browser =
+        browser ??
+        (await playwright.chromium.launch({
+          // Don't let Playwright handle the signals, or the pool shutdown will
+          // error out trying to clean up its resources.
+          handleSIGHUP: false,
+          handleSIGINT: false,
+          handleSIGTERM: false,
+        }));
+      return (await browser.newContext()).newPage();
     },
     async destroy(page: playwright.Page) {
-      await page.close();
-      const context = browserContextPageMap.get(page);
-      await context!.close();
-      browserContextPageMap.delete(page);
-      // Since we set the pool to always have a resource, zero open pages means
-      // we're draining the pool and need to clean up
-      if (Array.from(browserContextPageMap.values()).length === 0) {
-        await browser?.close();
-        browser = null;
+      try {
+        console.log("Closing Puppeteer");
+        await page.context().close();
+
+        // Since we set the pool to always have a resource, zero open pages means
+        // we're draining the pool and need to clean up
+        if (pool.size === 0) {
+          await browser?.close();
+          browser = null;
+        }
+      } catch (ex) {
+        console.error(ex);
       }
     },
   },
   {
     min: 1,
     max: 5,
+    idleTimeoutMillis: 10000,
   }
 );
 
