@@ -38,7 +38,7 @@
     </header>
   </summary>
   <ul
-    class="p-2 rounded-lg grid gap-2 md:gap-4 gap-y-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min bg-gradient-to-b from-gray-200"
+    class="p-2 rounded-lg grid gap-2 md:gap-4 gap-y-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min"
     style={pattern}>
     {#each group.links as link (link.url)}
       <li class="contents">

@@ -70,11 +70,30 @@ async function getPageFields(
     // Timeout is arbitrary, just there to provide nominal mitigation against
     // slowloris-style attacks
     page = await pool.acquire();
+
+    // YouTube links shared from places like Reddit are shared in oembed format,
+    // which we don't process correctly. Special-case their links to extract a
+    // useful URL.
+    const urlParts = new URL(url);
+    const queryParamUrl = urlParts.searchParams.get("url")!;
+    if (urlParts.hostname.endsWith("youtube.com") && queryParamUrl) {
+      try {
+        const embeddedUrlParts = new URL(queryParamUrl);
+        if (
+          embeddedUrlParts.hostname.endsWith("youtube.com") &&
+          embeddedUrlParts.pathname.startsWith("/watch") &&
+          embeddedUrlParts.searchParams.has("v")
+        ) {
+          url = queryParamUrl;
+        }
+      } catch (ex) {}
+    }
+
     // Timeout is arbitrary, just there to provide nominal mitigation against
     // slowloris-style attacks. Apply networkidle because Twitter doesn't have anything loaded by the 'load' event
     const request = await page.goto(url, {
       waitUntil: "networkidle",
-      timeout: 30000,
+      timeout: 60000,
     });
     const contentType = request?.headers()?.["content-type"];
     const fileExtension = contentType && mime.getExtension(contentType);
