@@ -12,7 +12,7 @@
   const dispatch = createEventDispatcher();
 
   const actionButtonStyle =
-    "float-right border-l border-b border-gray-500 rounded-bl-lg ml-2 flex-none flex items-center bg-gray-50 hover:bg-gray-200 transition-colors";
+    "float-right border-l border-b border-gray-500 rounded-bl-lg rounded-tr-lg ml-2 flex-none flex items-center bg-gray-50 hover:bg-gray-200 transition-colors";
 
   function colorArticle(dateDeleted: string | null) {
     if (!dateDeleted) {
