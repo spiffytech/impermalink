@@ -13,13 +13,13 @@ WORKDIR /app
 ADD sapper/package*json ./
 RUN npm install
 
-#ENV NODE_ENV=production
+ENV NODE_ENV=production
 
-ADD ./tailwind.config.js ./
 ADD ./sapper ./
 ADD ./CHECKS ./
 # Do before `run build` so our generate file gets copied to our Sapper build
-# output
+# output. Also have to build tailwind after copying in Sapper or PurgeCSS
+# doesn't work.
 RUN npm run tailwind
 RUN npm run cachebust
 RUN npm run build
