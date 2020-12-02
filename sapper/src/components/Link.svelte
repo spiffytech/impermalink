@@ -1,7 +1,7 @@
 <script lang="ts">
   import axios from "axios";
   import Fa from "svelte-fa";
-  import { faSkull } from "@fortawesome/free-solid-svg-icons";
+  import { faSkull, faTrashRestore } from "@fortawesome/free-solid-svg-icons";
   import { faTrashAlt } from "@fortawesome/free-regular-svg-icons";
   import { createEventDispatcher } from "svelte";
 
@@ -45,7 +45,7 @@
       class={actionButtonStyle}
       on:submit={moveToRecycleBin}>
       <button class="p-4 h-full" type="submit">
-        <Fa icon={faTrashAlt} class="inline" />
+        <Fa icon={faTrashAlt} size="1.25x" class="inline" />
       </button>
     </form>
   {:else}
@@ -54,7 +54,7 @@
       class={actionButtonStyle}
       on:submit={moveFromRecycleBin}>
       <button class="p-4 h-full" type="submit">
-        <Fa icon={faSkull} class="inline" />
+        <Fa icon={faTrashRestore} size="1.25x" class="inline" />
       </button>
     </form>
   {/if}
@@ -68,6 +68,9 @@
     target="_blank"
     on:click={() => moveToRecycleBin()}>
     <header class="text-lg" title={link.title || undefined}>
+      {#if link.dateDeleted}
+        <Fa icon={faSkull} class="inline" />
+      {/if}
       {link.title && link.title.slice(0, 140)}
     </header>
     <p

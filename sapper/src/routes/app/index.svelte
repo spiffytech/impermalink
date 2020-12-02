@@ -22,6 +22,7 @@
     faLink,
     faExclamationTriangle,
     faSkull,
+    faTrashRestore,
   } from "@fortawesome/free-solid-svg-icons";
 
   import LinkGroup from "../../components/LinkGroup.svelte";
@@ -129,12 +130,16 @@
       transition:fly={{ x: -100, easing: quintOut }}>
       <div class="flex-auto">
         <p class="text-xs italic text-gray-600">Top of the Recycle Bin</p>
-        <p class="italic">{topOfRecycleBin.title}</p>
+        <p class="italic">
+          <Fa icon={faSkull} class="inline" />
+          {topOfRecycleBin.title}
+        </p>
       </div>
       <button
         class="border border-gray-500 p-4 rounded-lg ml-4"
         on:click|preventDefault={moveFromRecycleBin}><Fa
-          icon={faSkull}
+          icon={faTrashRestore}
+          size="1.25x"
           class="inline" /></button>
     </footer>
   {/key}
