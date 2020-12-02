@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
+    "cachebust": "sed -i 's/%cachebust%/'$(date --iso-8601=seconds)'/' src/template.html",
     "export": "sapper export --legacy",
     "start": "node __sapper__/build",
     "validate": "svelte-check --ignore src/node_modules/@sapper",

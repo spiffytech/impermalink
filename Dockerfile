@@ -21,6 +21,7 @@ ADD ./CHECKS ./
 # Do before `run build` so our generate file gets copied to our Sapper build
 # output
 RUN npm run tailwind
+RUN npm run cachebust
 RUN npm run build
 
 RUN mkdir -p /data
