@@ -2,7 +2,7 @@
   import type { Preload } from "@sapper/common";
   export const preload: Preload.Preload = async function preload(this) {
     const [linkGroupsResp, colorsResp] = await Promise.all([
-      this.fetch("/app/linkGroups.json"),
+      this.fetch("/app.json"),
       this.fetch("/app/colors.json"),
     ]);
     const [{ linkGroups }, colors] = await Promise.all([
@@ -26,8 +26,8 @@
     faTrashRestore,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import LinkGroup from "../../components/LinkGroup.svelte";
-  import type { Link as ILink, LinkGroup as ILinkGroup } from "../_lib/types";
+  import LinkGroup from "../components/LinkGroup.svelte";
+  import type { Link as ILink, LinkGroup as ILinkGroup } from "./_lib/types";
 
   export let linkGroups: ILinkGroup[];
   export let colors: any;

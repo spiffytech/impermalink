@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
-import db from "../_lib/db";
-import type { Link, LinkGroup } from "../_lib/types";
+import db from "./_lib/db";
+import type { Link, LinkGroup } from "./_lib/types";
 
 const minLinkGroupSize = process.env.GROUP_SIZE ?? 2;
 
