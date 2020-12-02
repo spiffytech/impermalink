@@ -50,7 +50,7 @@
   let spin = false;
 
   async function refreshLinks() {
-    const resp = await fetch("/app/linkGroups.json");
+    const resp = await fetch("/app.json");
     const { linkGroups: newLinkGroups } = await resp.json();
     linkGroups = newLinkGroups;
   }
