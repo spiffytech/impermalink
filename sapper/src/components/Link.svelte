@@ -64,9 +64,9 @@
     class="link block h-full p-2 hover:bg-gray-200 transition-colors"
     data-id={link.id}
     data-is-deleted={link.dateDeleted ? 'true' : null}
-    rel="noopener noreferrer"
+    rel="noopener noreferrer external"
     target="_blank"
-    on:click={moveToRecycleBin}>
+    on:click={() => moveToRecycleBin()}>
     <header class="text-lg" title={link.title || undefined}>
       {link.title && link.title.slice(0, 140)}
     </header>
