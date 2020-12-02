@@ -9,8 +9,7 @@
   let password: string = "";
   let passwordAgain: string = "";
 
-  async function submit(event: Event) {
-    event.preventDefault();
+  async function submit() {
     try {
       await axios.post(
         "/signup",
@@ -29,7 +28,7 @@
   }
 </script>
 
-<form on:submit={submit}>
+<form on:submit|preventDefault={submit}>
   {#if errors}
     <article class="message is-danger">
       <div class="message-header">
@@ -46,10 +45,8 @@
   {/if}
   <div class="field">
     <label class="label" for="email">Email</label>
-    <div class="control has-icons-left has-icons-right">
-      <span class="icon is-small is-left">
-        <Fa icon={faUser} class="inline" />
-      </span>
+    <div>
+      <Fa icon={faUser} class="inline" />
       <input
         class="input"
         type="email"
@@ -62,10 +59,8 @@
 
   <div class="field">
     <label class="label" for="password">Password</label>
-    <div class="control has-icons-left has-icons-right">
-      <span class="icon is-small is-left">
-        <Fa icon={faKey} class="inline" />
-      </span>
+    <div>
+      <Fa icon={faKey} class="inline" />
       <input
         class="input"
         type="password"
@@ -79,10 +74,8 @@
 
   <div class="field">
     <label class="label" for="passwordAgain">Password</label>
-    <div class="control has-icons-left has-icons-right">
-      <span class="icon is-small is-left">
-        <Fa icon={faRedoAlt} class="inline" />
-      </span>
+    <div>
+      <Fa icon={faRedoAlt} class="inline" />
       <input
         class="input"
         type="password"
