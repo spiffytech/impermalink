@@ -141,6 +141,11 @@
           <Fa icon={faSkull} class="inline" />
           {topOfRecycleBin.title}
         </p>
+        <p
+          title={topOfRecycleBin.url}
+          class="block text-xs italic text-gray-600 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
+          {topOfRecycleBin.url.replace(/^https?:\/\/(www\.)?/, '')}
+        </p>
       </div>
       <button
         class="border-l border-gray-500 p-4 -my-2 ml-4"
