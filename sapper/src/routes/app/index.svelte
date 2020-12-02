@@ -132,7 +132,7 @@
         <p class="italic">{topOfRecycleBin.title}</p>
       </div>
       <button
-        class="border border-gray-500 p-4 rounded-lg"
+        class="border border-gray-500 p-4 rounded-lg ml-4"
         on:click|preventDefault={moveFromRecycleBin}><Fa
           icon={faSkull}
           class="inline" /></button>
