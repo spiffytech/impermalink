@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Impermalink - Links for Later</title>
+    <link
+      rel="stylesheet"
+      href="/tailwind.css?cache=busted"
+	/>
+    <link rel="manifest" href="/manifest.json"/>
+
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="application-name" content="Impermalink"/>
+    <meta name="apple-mobile-web-app-title" content="Impermalink"/>
+    <meta name="msapplication-starturl" content="/app"/>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+	%sapper.base%
+
+	<link rel="stylesheet" href="global.css">
+	<link rel="stylesheet" href="https://unpkg.com/spinkit@2.0.1/spinkit.min.css">
+
+	<!-- Sapper creates a <script> tag containing `src/client.js`
+	     and anything else it needs to hydrate the app and
+	     initialise the router -->
+	%sapper.scripts%
+
+	<!-- Sapper generates a <style> tag containing critical CSS
+	     for the current page. CSS for the rest of the app is
+	     lazily loaded when it precaches secondary pages -->
+	%sapper.styles%
+
+	<!-- This contains the contents of the <svelte:head> component, if
+	     the current page has one -->
+	%sapper.head%
+</head>
+<body class="md:mx-8 flex flex-col items-center mx-2">
+    <noscript>
+      <strong>Impermalink requires JS to work. I'm sorry. Early revisions supported a
+        JS-free version, but the UX wasn't very good, and building the
+        progressively-enhanced parts without a real SPA framework felt like
+        coding with one hand tied behind my back. So the best I can offer you is
+        an SPA I tried to make light and fast. I hope you like it.</strong>
+    </noscript>
+	<!-- The application will be rendered inside this element,
+	     because `src/client.js` references it -->
+	<div class="contents hidden" id="sapper">%sapper.html%</div>
+</body>
+</html>

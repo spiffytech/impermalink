@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import Joi from "joi";
 import mime from "mime";
@@ -8,12 +9,17 @@ import { User } from "../lib/types";
 import validators from "../lib/validators";
 
 const apiRouter = express.Router();
+apiRouter.use(
+  cors({
+    origin: [/^https?:\/\/impermalink.spiffy.tech$/, /^http:\/\/localhost:*/],
+  })
+);
 apiRouter.use((req, res, next) => {
   const user: User | undefined =
     req.query.token &&
     db.prepare("select * from users where apiKey=?").get(req.query.token);
 
-  if (!user) {
+  if (!user && req.path !== "/authState") {
     res.status(403);
     res.json({
       error:
@@ -22,8 +28,12 @@ apiRouter.use((req, res, next) => {
     return void next();
   }
 
-  res.locals.email = user.email;
+  res.locals.email = user?.email;
   return void next();
+});
+
+apiRouter.get("/authState", (req, res) => {
+  res.json({ authed: Boolean(res.locals?.email) });
 });
 
 apiRouter.post("/addLink", async (req, res) => {

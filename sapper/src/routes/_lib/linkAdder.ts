@@ -4,8 +4,8 @@ import genericPool from "generic-pool";
 import mime from "mime";
 import playwright from "playwright";
 
-import db from "../lib/db";
-import { NewLink } from "./types";
+import db from "./db";
+import type { NewLink } from "./types";
 
 let browser: playwright.Browser | null = null;
 export const pool = genericPool.createPool(

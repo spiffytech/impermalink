@@ -1,5 +1,7 @@
 Dockerfile
-node_modules
+**/node_modules
+sapper/__sapper__
+static/tailwind.css
 .git
 dist
 *.sqlite

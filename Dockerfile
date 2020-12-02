@@ -10,11 +10,18 @@ RUN apt update && apt install -y build-essential python-dev
 
 WORKDIR /app
 
-ADD package*json ./
+ADD sapper/package*json ./
 RUN npm install
 
-ADD . ./
+#ENV NODE_ENV=production
+
+ADD ./tailwind.config.js ./
+ADD ./sapper ./
+ADD ./CHECKS ./
+# Do before `run build` so our generate file gets copied to our Sapper build
+# output
+RUN npm run tailwind
 RUN npm run build
 
 RUN mkdir -p /data
-CMD node dist/index.js
+CMD npm run start

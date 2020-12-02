@@ -104,5 +104,6 @@ dist
 .tern-port
 
 db.sqlite*
-src/static/tailwind.css
+**/tailwind.css
 .vscode
+sapper/.env
