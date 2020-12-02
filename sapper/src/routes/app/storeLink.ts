@@ -109,18 +109,6 @@ async function getPageFields(
         truncate(maxFieldLength, title),
         truncate(maxFieldLength, descriptionFromPlaywright),
       ];
-    } else if (
-      // Handles YouTube embed links
-      fileExtension === "xml"
-    ) {
-      const content = await page.content();
-      if (!content.includes("<oembed>"))
-        return [urlFromPlaywright, "Untitled XML", ""];
-      const titleRaw = cheerio.load(content)("title").text();
-      const title = titleRaw
-        ? truncate(maxFieldLength, titleRaw)
-        : "Untitled XML file";
-      return [urlFromPlaywright, title, ""];
     } else {
       return [urlFromPlaywright, `Untitled ${fileExtension}`, null];
     }
