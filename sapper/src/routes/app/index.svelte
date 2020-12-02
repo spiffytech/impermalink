@@ -19,6 +19,7 @@
   import { quintOut } from "svelte/easing";
   import Fa from "svelte-fa";
   import {
+    faBan,
     faLink,
     faExclamationTriangle,
     faSkull,
@@ -83,6 +84,12 @@
     await axios.post("/app/moveFromRecycleBin", { linkId: topOfRecycleBin.id });
     await refreshLinks();
   }
+
+  async function deleteLink() {
+    if (!topOfRecycleBin) return;
+    await axios.post("/app/deleteLink", { linkId: topOfRecycleBin.id });
+    await refreshLinks();
+  }
 </script>
 
 <form on:submit={storeLink}>
@@ -137,6 +144,12 @@
       </div>
       <button
         class="border-l border-gray-500 p-4 -my-2 ml-4"
+        on:click|preventDefault={deleteLink}><Fa
+          icon={faBan}
+          size="1.25x"
+          class="inline" /></button>
+      <button
+        class="border-l border-gray-500 p-4 -my-2"
         on:click|preventDefault={moveFromRecycleBin}><Fa
           icon={faTrashRestore}
           size="1.25x"
