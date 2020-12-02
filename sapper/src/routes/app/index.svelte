@@ -15,17 +15,33 @@
 
 <script lang="ts">
   import axios from "axios";
+  import { fly } from "svelte/transition";
+  import { quintOut } from "svelte/easing";
   import Fa from "svelte-fa";
   import {
     faLink,
     faExclamationTriangle,
+    faSkull,
   } from "@fortawesome/free-solid-svg-icons";
 
   import LinkGroup from "../../components/LinkGroup.svelte";
-  import type { LinkGroup as ILinkGroup } from "../_lib/types";
+  import type { Link as ILink, LinkGroup as ILinkGroup } from "../_lib/types";
 
   export let linkGroups: ILinkGroup[];
   export let colors: any;
+
+  $: topOfRecycleBin = linkGroups.reduce((top, group): ILink | null => {
+    const recycled = group.links.filter((link) => link.dateDeleted);
+    recycled.sort((a, b) => (a.dateDeleted! > b.dateDeleted! ? -1 : 1));
+    const topRecycledInGroup = recycled?.[0];
+    if (
+      topRecycledInGroup &&
+      (!top || topRecycledInGroup.dateDeleted! > top.dateDeleted!)
+    ) {
+      return topRecycledInGroup;
+    }
+    return top;
+  }, null as ILink | null);
 
   let error: string | null = null;
   let newLink: string = "";
@@ -59,6 +75,12 @@
     } finally {
       spin = false;
     }
+  }
+
+  async function moveFromRecycleBin() {
+    if (!topOfRecycleBin) return;
+    await axios.post("/app/moveFromRecycleBin", { linkId: topOfRecycleBin.id });
+    await refreshLinks();
   }
 </script>
 
@@ -98,4 +120,22 @@
     <span class="mt-8">You stare into the abyss.</span><br />
     <span class="pb-1 border-b-4 border-gray-700">The abyss stares back.</span>
   </p>
+{/if}
+
+{#if topOfRecycleBin}
+  {#key 'footer-' + topOfRecycleBin.id.toString()}
+    <footer
+      class="z-10 sticky bottom-0 pt-2 w-full md:w-max flex justify-between items-center bg-gray-100 p-2 rounded-lg"
+      transition:fly={{ x: -100, easing: quintOut }}>
+      <div class="flex-auto">
+        <p class="text-xs italic text-gray-600">Top of the Recycle Bin</p>
+        <p class="italic">{topOfRecycleBin.title}</p>
+      </div>
+      <button
+        class="border border-gray-500 p-4 rounded-lg"
+        on:click|preventDefault={moveFromRecycleBin}><Fa
+          icon={faSkull}
+          class="inline" /></button>
+    </footer>
+  {/key}
 {/if}
