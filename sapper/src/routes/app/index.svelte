@@ -136,7 +136,7 @@
         </p>
       </div>
       <button
-        class="border border-gray-500 p-4 rounded-lg ml-4"
+        class="border-l border-gray-500 p-4 -my-2 ml-4"
         on:click|preventDefault={moveFromRecycleBin}><Fa
           icon={faTrashRestore}
           size="1.25x"
