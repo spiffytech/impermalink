@@ -65,7 +65,7 @@ const server = express()
   .use("/app/share-target", cors({ origin: true, credentials: true }))
   .use(
     compression({ threshold: 0 }),
-    sirv("static", { dev }),
+    sirv("static", { dev, etag: true }),
     sapper.middleware({
       session: (_req: Request, res: Response) => res.locals,
     })
