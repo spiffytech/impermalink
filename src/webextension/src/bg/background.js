@@ -6,11 +6,15 @@ browser.contextMenus.create({
 
 async function saveLink(url) {
   try {
-    await fetch("https://impermalink.spiffy.tech/app/share-target", {
-      method: "post",
-      body: url,
-      credentials: "include",
-    });
+    const response = await fetch(
+      "https://impermalink.spiffy.tech/app/storeLink",
+      {
+        method: "post",
+        body: url,
+        credentials: "include",
+      }
+    );
+    if (response.status >= 400) throw new Error("Couldn't save your link");
     browser.notifications.create("impermalink", {
       type: "basic",
       title: "Impermalink",
