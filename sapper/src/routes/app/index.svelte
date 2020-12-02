@@ -126,10 +126,10 @@
 {#if topOfRecycleBin}
   {#key 'footer-' + topOfRecycleBin.id.toString()}
     <footer
-      class="z-10 sticky bottom-0 pt-2 w-full flex justify-between items-center bg-gray-100 p-2 rounded-lg"
+      class="z-10 sticky bottom-0 pt-2 border-t-8 border-gray-400 w-full flex justify-between items-center bg-gray-100 p-2 pr-0"
       transition:fly={{ x: -100, easing: quintOut }}>
       <div class="flex-auto">
-        <p class="text-xs italic text-gray-600">Top of the Recycle Bin</p>
+        <p class="text-xs italic text-gray-600">In the Recycle Bin</p>
         <p class="italic">
           <Fa icon={faSkull} class="inline" />
           {topOfRecycleBin.title}
