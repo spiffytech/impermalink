@@ -78,6 +78,8 @@
       class="block text-xs italic text-gray-600 underline whitespace-nowrap overflow-hidden overflow-ellipsis">
       {link.url.replace(/^https?:\/\/(www\.)?/, '')}
     </p>
-    <p class="text-sm text-gray-800 italic">{link.description}</p>
+    {#if link.description}
+      <p class="text-sm text-gray-800 italic">{link.description}</p>
+    {/if}
   </a>
 </article>
