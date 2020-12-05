@@ -5,8 +5,9 @@ FROM mcr.microsoft.com/playwright:focal
 
 ENV DATA_DIR=/data
 
-# For compiling better-sqlite3
-RUN apt update && apt install -y build-essential python-dev
+# build-essential and python-dev are for compiling better-sqlite3.
+# imagemagick is for converting favicons into a file format ColorThief can parse.
+RUN apt update && apt install -y build-essential python-dev imagemagick
 
 WORKDIR /app
 

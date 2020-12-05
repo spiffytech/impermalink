@@ -1,11 +1,17 @@
+import fs from "fs";
+import { promisify } from "util";
+
+import axios from "axios";
 const colorThief = require("colorthief");
 const twColors: Record<
   string,
   string | Record<string, string>
 > = require("tailwindcss/colors");
 import genericPool from "generic-pool";
+import gm from "gm";
 import mime from "mime";
 import playwright from "playwright";
+import tmp from "tmp-promise";
 
 import type { Request, Response } from "express";
 import type { Page } from "playwright";
@@ -94,16 +100,80 @@ function truncate(maxLength: number, str: string | null): string | null {
   return str;
 }
 
-async function parseColorsForImage(
-  imgUrl: string
+async function fetchFaviconAsPng(
+  url: string | null
+): Promise<{ path: string; cleanup: tmp.FileResult["cleanup"] } | null> {
+  if (!url) return null;
+
+  try {
+    const response = await axios.get(url, { responseType: "stream" });
+    // ColorThief will correctly handle PNG/JPEG images from a URL - no need to
+    // download them to disk, just return the original URL for it to use
+    if (mime.getExtension(response.headers["content-type"]) !== "ico") {
+      return { path: url, cleanup: () => Promise.resolve(undefined) };
+    }
+
+    const { path: iconPath, cleanup: iconCleanup } = await tmp.file({
+      prefix: "favicon-in-",
+      postfix: ".ico",
+    });
+    await new Promise((resolve, reject) => {
+      const writer = fs.createWriteStream(iconPath);
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+      response.data.pipe(writer);
+    });
+
+    const { path: pngPath, cleanup: pngCleanup } = await tmp.file({
+      prefix: "favicon-out-",
+      postfix: ".png",
+    });
+    await new Promise((resolve, reject) => {
+      // Need to use ImageMagick because GraphicsMagick doesn't understand .ico files
+      gm.subClass({ imageMagick: true })(iconPath)
+        .setFormat("png")
+        .write(pngPath, (err) => {
+          if (err) return reject(err);
+          resolve(undefined);
+        });
+    });
+
+    await iconCleanup();
+    return { path: pngPath, cleanup: pngCleanup };
+  } catch (ex) {
+    console.error(ex);
+    return null;
+  }
+}
+
+async function fetchFaviconColor(url: string | null) {
+  if (!url) return;
+  const path = await fetchFaviconAsPng(url);
+  if (!path) return null;
+  const parseResult = await colorThief.getColor(path.path);
+  await path.cleanup();
+  return parseResult;
+}
+
+async function parseColorsForFavicon(
+  imgUrlPrimary: string,
+  imgUrlFallback: string | null
 ): Promise<{
+  favicon: string;
   faviconColor: [number, number, number];
   faviconTailwindColor: string;
 } | null> {
   try {
-    const faviconColor: [number, number, number] = await colorThief.getColor(
-      imgUrl
-    );
+    console.log(imgUrlPrimary, imgUrlFallback);
+    const primaryParseResult = await fetchFaviconColor(imgUrlPrimary);
+    const parseResult =
+      primaryParseResult ?? (await fetchFaviconColor(imgUrlFallback));
+    console.log("parse result:", parseResult);
+
+    if (!parseResult) return null;
+    const favicon = primaryParseResult ? imgUrlPrimary : imgUrlFallback!;
+    const faviconColor: [number, number, number] = parseResult;
+
     const faviconTailwindColor = tailwindRgbColors50
       .map((twColor) => {
         const twRgb = hexToRgb(twColor)!;
@@ -116,8 +186,9 @@ async function parseColorsForImage(
       })
       .sort((a, b) => (a[1] < b[1] ? -1 : 1))[0][0];
 
-    return { faviconColor, faviconTailwindColor };
-  } catch {
+    return { favicon, faviconColor, faviconTailwindColor };
+  } catch (ex) {
+    console.error(ex);
     return null;
   }
 }
@@ -174,14 +245,29 @@ async function getPageFields(
           "content"
         )) ?? null;
 
-      const faviconPath =
-        (await (await page.$('link[rel="icon"]'))?.getAttribute("href")) ??
+      // Maybe the page has a regular favicon? Playwright won't show us
+      // favicon requests in the network tab, so who knows until we just try it
+      let candidateFaviconUrlPrimary = new URL(
+        "/favicon.ico",
+        urlFromPlaywright
+      ).toString();
+      // If /favicon.ico doesn't work, we can try parsing any icon rels found in
+      // the HTML
+      const candiateFaviconUrlFallback =
+        (await (await page.$('link[rel*="icon"]'))?.getAttribute("href")) ??
         null;
 
-      const favicon = faviconPath && new URL(faviconPath, url).toString();
-
-      const { faviconColor = null, faviconTailwindColor = null } =
-        ((favicon && (await parseColorsForImage(favicon))) || {}) ?? {};
+      console.log("Trying favicon fetch/parse");
+      let { favicon = null, faviconColor = null, faviconTailwindColor = null } =
+        ((await parseColorsForFavicon(
+          candidateFaviconUrlPrimary,
+          candiateFaviconUrlFallback
+        )) || {
+          faviconColor: null,
+          faviconTailwindColor: null,
+        }) ??
+        {};
+      console.log("Finished trying favicon fetch/parse");
 
       return {
         url: urlFromPlaywright,

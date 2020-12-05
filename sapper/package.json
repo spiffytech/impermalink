@@ -24,11 +24,13 @@
     "express": "^4.17.1",
     "generic-pool": "^3.7.1",
     "geopattern": "^1.2.3",
+    "gm": "^1.23.1",
     "joi": "^17.3.0",
     "mime": "^2.4.6",
     "playwright": "^1.6.2",
     "sirv": "^1.0.0",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "tmp-promise": "^3.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -56,6 +58,7 @@
     "@types/express": "^4.17.9",
     "@types/generic-pool": "^3.1.9",
     "@types/geopattern": "^1.2.4",
+    "@types/gm": "^1.18.9",
     "@types/mime": "^2.0.3",
     "@types/node": "^14.11.1",
     "@types/source-map-support": "^0.5.3",
