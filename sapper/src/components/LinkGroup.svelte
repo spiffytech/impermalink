@@ -16,6 +16,7 @@
       .toDataUrl();
     pattern = `background-image: ${url};`;
   }
+  $: favicon = group.links.find((link) => link.favicon)?.favicon;
 </script>
 
 <style>
@@ -32,7 +33,11 @@
     style={pattern}>
     <header
       class="text-2xl text-gray-700 rounded-lg p-2 mb-2 bg-gradient-to-r from-gray-200">
-      <Fa icon={faGlobeAmericas} class="inline" />
+      {#if favicon}
+        <img class="h-6 w-6 inline" src={favicon} alt="favicon" />
+      {:else}
+        <Fa icon={faGlobeAmericas} class="inline" />
+      {/if}
       <span>{group.domain.replace(/^www\./, '')}</span>
       <span class="text-sm text-gray-500 italic">({group.links.length})</span>
     </header>

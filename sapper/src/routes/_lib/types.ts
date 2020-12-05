@@ -16,6 +16,8 @@ export interface Link {
   description: string | null;
   dateSaved: string;
   dateDeleted: string | null;
+  body: string | null;
+  favicon: string | null;
 }
 export type NewLink = Omit<Link, "id" | "dateSaved" | "dateDeleted">;
 

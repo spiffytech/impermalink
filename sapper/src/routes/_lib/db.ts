@@ -29,6 +29,8 @@ if (cluster.isMaster) {
         dateSaved text not NULL DEFAULT (datetime('now', 'localtime')),
         dateDeleted text
       )`,
+    `alter table links add column body text`,
+    `alter table links add column favicon text`,
   ];
   db.transaction(() => {
     const [{ user_version: schemaVersion }] = db.pragma("user_version");

@@ -1,4 +1,3 @@
-import cheerio from "cheerio";
 import genericPool from "generic-pool";
 import mime from "mime";
 import playwright from "playwright";
@@ -63,7 +62,12 @@ function truncate(maxLength: number, str: string | null): string | null {
 
 async function getPageFields(
   url: string
-): Promise<[string, string, string | null]> {
+): Promise<{
+  url: string;
+  title: string;
+  description: string | null;
+  favicon: string | null;
+}> {
   let page: Page | null = null;
   try {
     const maxFieldLength = 280;
@@ -102,15 +106,29 @@ async function getPageFields(
     if (fileExtension === "html") {
       const title = await page.title();
       const descriptionFromPlaywright =
-        (await (await page.$('meta[name="description"]'))?.textContent()) ??
+        (await (await page.$('meta[name="description"]'))?.getAttribute(
+          "content"
+        )) ?? null;
+
+      const faviconPath =
+        (await (await page.$('link[rel="icon"]'))?.getAttribute("href")) ??
         null;
-      return [
-        urlFromPlaywright,
-        truncate(maxFieldLength, title),
-        truncate(maxFieldLength, descriptionFromPlaywright),
-      ];
+
+      const favicon = faviconPath && new URL(faviconPath, url).toString();
+
+      return {
+        url: urlFromPlaywright,
+        title: truncate(maxFieldLength, title),
+        description: truncate(maxFieldLength, descriptionFromPlaywright),
+        favicon,
+      };
     } else {
-      return [urlFromPlaywright, `Untitled ${fileExtension}`, null];
+      return {
+        url: urlFromPlaywright,
+        title: `Untitled ${fileExtension}`,
+        description: null,
+        favicon: null,
+      };
     }
   } catch (ex) {
     const error: Error & { details?: any } = new Error("Error fetching URL");
@@ -126,7 +144,7 @@ async function getPageFields(
 }
 
 async function add(email: string, urlRaw: string) {
-  const [url, title, description] = await getPageFields(urlRaw);
+  const { url, title, description, favicon } = await getPageFields(urlRaw);
 
   // I don't like putting this check _after_ the URL fetch, but I also don't
   // want to store both the original + finalized URLs. And that'd still be
@@ -143,10 +161,12 @@ async function add(email: string, urlRaw: string) {
     domain: new URL(url).hostname,
     title,
     description,
+    body: null,
+    favicon,
   };
   try {
     db.prepare(
-      "insert into links (email, url, domain, title, description) values (?, ?, ?, ?, ?)"
+      "insert into links (email, url, domain, title, description, body, favicon) values (?, ?, ?, ?, ?, ?, ?)"
     ).run(...Object.values(record));
   } catch (ex) {
     console.error(ex);
