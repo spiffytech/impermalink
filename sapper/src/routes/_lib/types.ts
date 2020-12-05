@@ -18,6 +18,8 @@ export interface Link {
   dateDeleted: string | null;
   body: string | null;
   favicon: string | null;
+  faviconColor: string | null;
+  faviconTailwindColor: string | null;
 }
 export type NewLink = Omit<Link, "id" | "dateSaved" | "dateDeleted">;
 

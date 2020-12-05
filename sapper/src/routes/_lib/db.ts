@@ -31,6 +31,8 @@ if (cluster.isMaster) {
       )`,
     `alter table links add column body text`,
     `alter table links add column favicon text`,
+    `alter table links add column faviconColor faviconTailwindColor text`,
+    `alter table links add column faviconTailwindColor text`,
   ];
   db.transaction(() => {
     const [{ user_version: schemaVersion }] = db.pragma("user_version");

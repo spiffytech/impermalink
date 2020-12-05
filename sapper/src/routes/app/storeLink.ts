@@ -1,3 +1,8 @@
+const colorThief = require("colorthief");
+const twColors: Record<
+  string,
+  string | Record<string, string>
+> = require("tailwindcss/colors");
 import genericPool from "generic-pool";
 import mime from "mime";
 import playwright from "playwright";
@@ -7,6 +12,35 @@ import type { Page } from "playwright";
 
 import db from "../_lib/db";
 import type { NewLink } from "../_lib/types";
+
+// Derived from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+function hexToRgb(hex: string) {
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function (_m, r, g, b) {
+    return r + r + g + g + b + b;
+  });
+
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16),
+      ]
+    : null;
+}
+
+const tailwindRgbColors50 = Object.values(twColors)
+  .flatMap((palette) => {
+    if (typeof palette === "string") {
+      // Black/white are gravity wells, pulling in matches from better colors
+      if (palette.toLowerCase() === "#fff" || palette.toLowerCase() === "#000")
+        return null;
+      return palette;
+    } else return palette["400"];
+  })
+  .filter((val): val is string => Boolean(val));
 
 let browser: playwright.Browser | null = null;
 const pool = genericPool.createPool(
@@ -60,6 +94,34 @@ function truncate(maxLength: number, str: string | null): string | null {
   return str;
 }
 
+async function parseColorsForImage(
+  imgUrl: string
+): Promise<{
+  faviconColor: [number, number, number];
+  faviconTailwindColor: string;
+} | null> {
+  try {
+    const faviconColor: [number, number, number] = await colorThief.getColor(
+      imgUrl
+    );
+    const faviconTailwindColor = tailwindRgbColors50
+      .map((twColor) => {
+        const twRgb = hexToRgb(twColor)!;
+        return [
+          twColor,
+          Math.pow((twRgb[0] - faviconColor[0]) * 0.3, 2) +
+            Math.pow((twRgb[1] - faviconColor[1]) * 0.59, 2) +
+            Math.pow((twRgb[2] - faviconColor[2]) * 0.11, 2),
+        ] as [string, number];
+      })
+      .sort((a, b) => (a[1] < b[1] ? -1 : 1))[0][0];
+
+    return { faviconColor, faviconTailwindColor };
+  } catch {
+    return null;
+  }
+}
+
 async function getPageFields(
   url: string
 ): Promise<{
@@ -67,6 +129,8 @@ async function getPageFields(
   title: string;
   description: string | null;
   favicon: string | null;
+  faviconColor: [number, number, number] | null;
+  faviconTailwindColor: string | null;
 }> {
   let page: Page | null = null;
   try {
@@ -116,11 +180,16 @@ async function getPageFields(
 
       const favicon = faviconPath && new URL(faviconPath, url).toString();
 
+      const { faviconColor = null, faviconTailwindColor = null } =
+        ((favicon && (await parseColorsForImage(favicon))) || {}) ?? {};
+
       return {
         url: urlFromPlaywright,
         title: truncate(maxFieldLength, title),
         description: truncate(maxFieldLength, descriptionFromPlaywright),
         favicon,
+        faviconColor,
+        faviconTailwindColor,
       };
     } else {
       return {
@@ -128,6 +197,8 @@ async function getPageFields(
         title: `Untitled ${fileExtension}`,
         description: null,
         favicon: null,
+        faviconColor: null,
+        faviconTailwindColor: null,
       };
     }
   } catch (ex) {
@@ -144,7 +215,14 @@ async function getPageFields(
 }
 
 async function add(email: string, urlRaw: string) {
-  const { url, title, description, favicon } = await getPageFields(urlRaw);
+  const {
+    url,
+    title,
+    description,
+    favicon,
+    faviconColor,
+    faviconTailwindColor,
+  } = await getPageFields(urlRaw);
 
   // I don't like putting this check _after_ the URL fetch, but I also don't
   // want to store both the original + finalized URLs. And that'd still be
@@ -163,10 +241,12 @@ async function add(email: string, urlRaw: string) {
     description,
     body: null,
     favicon,
+    faviconColor: JSON.stringify(faviconColor),
+    faviconTailwindColor: faviconTailwindColor,
   };
   try {
     db.prepare(
-      "insert into links (email, url, domain, title, description, body, favicon) values (?, ?, ?, ?, ?, ?, ?)"
+      "insert into links (email, url, domain, title, description, body, favicon, faviconColor, faviconTailwindColor) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
     ).run(...Object.values(record));
   } catch (ex) {
     console.error(ex);

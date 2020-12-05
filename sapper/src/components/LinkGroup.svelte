@@ -9,14 +9,18 @@
   export let group: LinkGroup;
   export let colors: any;
 
+  $: favicon = group.links.find((link) => link.favicon)?.favicon;
+  $: groupColor = group.links
+    .find((link) => link.faviconTailwindColor)
+    ?.faviconTailwindColor?.replace(/^#/, "");
+
   let pattern: string = "";
   $: {
     const url = geopattern
-      .generate(group.domain, { color: colors.warmGray[200] })
+      .generate(group.domain, { color: groupColor ?? colors.warmGray[200] })
       .toDataUrl();
     pattern = `background-image: ${url};`;
   }
-  $: favicon = group.links.find((link) => link.favicon)?.favicon;
 </script>
 
 <style>
@@ -32,7 +36,7 @@
     class="linkGroup-header list-none sticky top-0 rounded-lg z-10"
     style={pattern}>
     <header
-      class="text-2xl text-gray-700 rounded-lg p-2 mb-2 bg-gradient-to-r from-gray-200">
+      class="text-2xl text-gray-700 rounded-lg p-2 mb-2 bg-gradient-to-r via-transparent from-gray-200">
       {#if favicon}
         <img class="h-6 w-6 inline" src={favicon} alt="favicon" />
       {:else}
