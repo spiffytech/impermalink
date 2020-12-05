@@ -1,5 +1,4 @@
 import fs from "fs";
-import { promisify } from "util";
 
 import axios from "axios";
 const colorThief = require("colorthief");
@@ -164,11 +163,9 @@ async function parseColorsForFavicon(
   faviconTailwindColor: string;
 } | null> {
   try {
-    console.log(imgUrlPrimary, imgUrlFallback);
     const primaryParseResult = await fetchFaviconColor(imgUrlPrimary);
     const parseResult =
       primaryParseResult ?? (await fetchFaviconColor(imgUrlFallback));
-    console.log("parse result:", parseResult);
 
     if (!parseResult) return null;
     const favicon = primaryParseResult ? imgUrlPrimary : imgUrlFallback!;
@@ -327,7 +324,7 @@ async function add(email: string, urlRaw: string) {
     description,
     body: null,
     favicon,
-    faviconColor: JSON.stringify(faviconColor),
+    faviconColor: faviconColor && JSON.stringify(faviconColor),
     faviconTailwindColor: faviconTailwindColor,
   };
   try {
