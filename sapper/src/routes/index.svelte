@@ -27,3 +27,9 @@ Welcome ... to ZomboCom.`;
     href="https://www.youtube.com/watch?v=qxWwEPeUuAg">ZomboCom</a>
   Impermalink!
 </p>
+
+<p>
+    Click the <span class="font-mono">Sign Up</span> button in the top-right to get started!
+</p>
+
+<img src="/screenshot-impermalink.png" class="w-2/3 border-3 border-gray-500 rounded-lg" />
