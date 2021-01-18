@@ -1,4 +1,4 @@
-browser.contextMenus.create({
+chrome.contextMenus.create({
   id: "impermalink",
   title: "Impermalink -> save for later",
   contexts: ["link"],
@@ -32,11 +32,11 @@ async function saveLink(url) {
   }
 }
 
-browser.pageAction.onClicked.addListener((tab) => {
+chrome.pageAction.onClicked.addListener((tab) => {
   return saveLink(tab.url);
 });
 
-browser.contextMenus.onClicked.addListener((info) => {
+chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId !== "impermalink") return;
   /*
   const apiKey = browser.storage.sync.get("apiKey");

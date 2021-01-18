@@ -25,13 +25,5 @@
     "tabs",
     "notifications",
     "https://impermalink.spiffy.tech/app/share-target"
-  ],
-  "options_ui": {
-    "page": "options/index.html"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "impermalink@spiffy.tech"
-    }
-  }
+  ]
 }
