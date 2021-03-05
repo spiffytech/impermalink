@@ -14,8 +14,16 @@ async function saveLink(url) {
         credentials: "include",
       }
     );
-    if (response.status >= 400) throw new Error("Couldn't save your link");
-    browser.notifications.create("impermalink", {
+    if (response.status >= 400) {
+      console.error(await response.text());
+      chrome.notifications.create("impermalink", {
+        type: "basic",
+        title: "Impermalink",
+        message: "Error saving link",
+      });
+      throw new Error("Couldn't save your link");
+    }
+    chrome.notifications.create("impermalink", {
       type: "basic",
       title: "Impermalink",
       message: "Saved the link!",
@@ -23,7 +31,7 @@ async function saveLink(url) {
     setTimeout(() => browser.notifications.clear("impermalink"), 2000);
   } catch (ex) {
     console.error(ex);
-    browser.notifications.create("impermalink", {
+    chrome.notifications.create("impermalink", {
       type: "basic",
       title: "Impermalink",
       message: "Encountered an error saving the link",
@@ -33,10 +41,12 @@ async function saveLink(url) {
 }
 
 chrome.pageAction.onClicked.addListener((tab) => {
+  console.log(tab);
   return saveLink(tab.url);
 });
 
 chrome.contextMenus.onClicked.addListener((info) => {
+  console.log("info", info);
   if (info.menuItemId !== "impermalink") return;
   /*
   const apiKey = browser.storage.sync.get("apiKey");
