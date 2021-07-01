@@ -69,7 +69,7 @@
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-terser": "^7.0.2",
     "sapper": "^0.29.1",
-    "svelte": "^3.38.2",
+    "svelte": "^3.38.3",
     "svelte-check": "^2.0.0",
     "svelte-fa": "git+https://github.com/Cweili/svelte-fa.git",
     "svelte-preprocess": "^4.7.3",
