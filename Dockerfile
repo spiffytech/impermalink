@@ -3,6 +3,11 @@
 # versions, but I don't expect that to be a very big deal.
 FROM mcr.microsoft.com/playwright:focal
 
+RUN apt update && apt install -y wget
+
+RUN wget https://github.com/benbjohnson/litestream/releases/download/v0.3.5/litestream-v0.3.5-linux-amd64.deb
+RUN dpkg -i litestream-v0.3.5-linux-amd64.deb
+
 ENV DATA_DIR=/data
 
 # build-essential and python-dev are for compiling better-sqlite3.
@@ -26,4 +31,4 @@ RUN npm run cachebust
 RUN npm run build
 
 RUN mkdir -p /data
-CMD npm run start
+CMD ["sh", "-c", "litestream replicate -exec 'npm start' || npm start"]
