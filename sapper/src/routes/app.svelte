@@ -93,7 +93,7 @@
 </script>
 
 <form on:submit={storeLink}>
-  <div class="flex">
+  <div class="flex mb-2">
     <span class="flex flex-col justify-around mr-2">
       {#if spin}
         <div class="sk-pulse" />
@@ -103,7 +103,7 @@
     </span>
 
     <input
-      class="flex-1"
+      class="flex-1 px-2 py-1 border rounded-md"
       type="url"
       name="newLink"
       placeholder="https://HomeStarRunner.com"
