@@ -71,7 +71,7 @@
     "sapper": "^0.29.2",
     "svelte": "^3.42.5",
     "svelte-check": "^2.2.5",
-    "svelte-fa": "git+https://github.com/Cweili/svelte-fa.git",
+    "svelte-fa": "^2.3.3",
     "svelte-preprocess": "^4.9.4",
     "tailwindcss": "^2.2.15",
     "tslib": "^2.3.1",
